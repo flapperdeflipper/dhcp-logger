@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+import argparse
+import MySQLdb
+import logging
+import json
+import os
+import sys
+
+
+DB_HOST = "localhost"
+DB_USER = "username"
+DB_PASS = "password"
+DB_NAME = "database"
+
+logging.basicConfig(
+    filename="/var/log/dhcp_logger.log",
+    filemode='a',
+    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.DEBUG
+)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Run commands with AWS credentials in the environment")
+
+    parser.add_argument(
+        '--command',
+        dest="command",
+        help="The command to execute",
+        required=True
+    )
+
+    parser.add_argument(
+        '--address',
+        dest="address",
+        help='The ip address of the host',
+        required=True
+    )
+
+    parser.add_argument(
+        '--mac',
+        dest="mac",
+        help='The mac address of the host',
+        required=False
+    )
+
+    parser.add_argument(
+        '--hostname',
+        dest="hostname",
+        help='The hostname address of the host',
+        required=False
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    arguments = parse_arguments()
+
+    db = MySQLdb.connect(host=DB_HOST, user=DB_USER, passwd=DB_PASS, db=DB_NAME)
+    cursor = db.cursor()
+
+    if arguments.command == "commit":
+        logging.info("Active: {} to {}: {}".format(arguments.address, arguments.hostname, arguments.mac))
+        active = 1
+
+    elif arguments.command == "release" or arguments.command == "expiry":
+        logging.info("Inactive: {} from {}: {}".format(arguments.address, arguments.hostname, arguments.mac))
+        active = 0
+
+    cursor.execute("REPLACE INTO records (active,address,mac,hostname,created_at) VALUES (%s,%s,%s,%s,NOW())", [active, arguments.address, arguments.mac, arguments.hostname])
+    cursor.close()
+    db.commit()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
