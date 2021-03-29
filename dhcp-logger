@@ -22,7 +22,7 @@ logging.basicConfig(
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run commands with AWS credentials in the environment")
+    parser = argparse.ArgumentParser(description="Log DHCP events to MySQL")
 
     parser.add_argument(
         '--command',
