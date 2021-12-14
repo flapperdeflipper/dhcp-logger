@@ -70,7 +70,21 @@ def main():
         active = 0
 
     ## Update records table
-    cursor.execute("REPLACE INTO records (active,address,mac,hostname,created_at) VALUES (%s,%s,%s,%s,NOW())", [
+    cursor.execute("""
+        INSERT INTO records (
+            active,
+            address,
+            mac,
+            hostname,
+            created_at
+        )
+        VALUES (%s,%s,%s,%s,NOW())
+        ON DUPLICATE KEY
+        UPDATE
+            active     = VALUES(active),
+            address    = VALUES(address),
+            hostname   = VALUES(hostname)
+        """, [
         active,
         arguments.address,
         arguments.mac,

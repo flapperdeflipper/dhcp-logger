@@ -9,7 +9,8 @@ CREATE TABLE records (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
     created_at TIMESTAMP NOT NULL,
     PRIMARY KEY(id),
-    CONSTRAINT uc_address_name_mac UNIQUE (address,hostname,mac)
+    CONSTRAINT uc_address_name_mac UNIQUE (address,hostname,mac),
+    CONSTRAINT uc_mac UNIQUE (mac)
 );
 
 CREATE TABLE logging (
