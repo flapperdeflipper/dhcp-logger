@@ -69,7 +69,22 @@ def main():
         logging.info("Inactive: {} from {}: {}".format(arguments.address, arguments.hostname, arguments.mac))
         active = 0
 
-    cursor.execute("REPLACE INTO records (active,address,mac,hostname,created_at) VALUES (%s,%s,%s,%s,NOW())", [active, arguments.address, arguments.mac, arguments.hostname])
+    ## Update records table
+    cursor.execute("REPLACE INTO records (active,address,mac,hostname,created_at) VALUES (%s,%s,%s,%s,NOW())", [
+        active,
+        arguments.address,
+        arguments.mac,
+        arguments.hostname
+    ])
+
+    ## Update logging table
+    cursor.execute("INSERT INTO logging (action,address,mac,hostname,date) VALUES (%s,%s,%s,%s,NOW())", [
+        arguments.command,
+        arguments.address,
+        arguments.mac,
+        arguments.hostname
+    ])
+
     cursor.close()
     db.commit()
     db.close()
