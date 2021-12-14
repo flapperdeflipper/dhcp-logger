@@ -19,6 +19,6 @@ CREATE TABLE logging (
     address    VARCHAR(30) NOT NULL,
     mac        VARCHAR(30) NOT NULL,
     hostname   VARCHAR(50),
-    date TIMESTAMP NOT NULL,
+    date       TIMESTAMP NOT NULL,
     PRIMARY KEY(id)
 );
